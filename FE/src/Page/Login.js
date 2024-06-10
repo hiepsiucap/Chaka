@@ -5,7 +5,7 @@ const Login = () => {
   return (
     <section className=" h-screen flex flex-col space-x-2 items-center justify-center ">
       <img src={logo} alt="" className=" w-32" />
-      <div className=" text-3xl font-Roboto font-bold bg-gradient-to-r from-primary via-secondary to-background inline-block text-transparent bg-clip-text">
+      <div className=" text-3xl font-Roboto font-bold bg-gradient-to-r pt-2 from-primary via-secondary to-background inline-block text-transparent bg-clip-text">
         Kết nối với những người bạn yêu quý.
       </div>
       <form className=" flex flex-col space-y-3 w-full items-center pt-12">

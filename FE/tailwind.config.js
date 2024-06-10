@@ -16,6 +16,10 @@ module.exports = {
         secondary: "#EE316B",
         background: "#842D72",
         button: "#04ABFF",
+        bg1: "#171717",
+        bg2: "#222222",
+        bg3: "#414141",
+        text: "#747579",
         // ...
       },
       backgroundImage: {
