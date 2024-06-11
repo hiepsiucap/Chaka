@@ -1,24 +1,66 @@
 package chakaChatApp.chaka.Entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Entity
-@Table(name = "room_members")
+@Table(name = "room_members", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"room_id", "user_id"})
+})
 public class RoomMember {
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
-    private ChatRoom chatRoom;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "room_id", nullable = false)
+    private Long roomId;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @Column(name = "joined_at", nullable = false)
-    private LocalDateTime joinedAt = LocalDateTime.now();
+    private Timestamp joinedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id", insertable = false, updatable = false)
+    private ChatRoom chatRoom;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(Long roomId) {
+        this.roomId = roomId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Timestamp getJoinedAt() {
+        return joinedAt;
+    }
+
+    public void setJoinedAt(Timestamp joinedAt) {
+        this.joinedAt = joinedAt;
+    }
 
     public ChatRoom getChatRoom() {
         return chatRoom;
@@ -34,14 +76,6 @@ public class RoomMember {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public LocalDateTime getJoinedAt() {
-        return joinedAt;
-    }
-
-    public void setJoinedAt(LocalDateTime joinedAt) {
-        this.joinedAt = joinedAt;
     }
 // Getters and setters
 }
