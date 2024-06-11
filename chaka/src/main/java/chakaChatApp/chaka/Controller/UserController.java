@@ -1,6 +1,7 @@
 package chakaChatApp.chaka.Controller;
 
 import chakaChatApp.chaka.Entity.User;
+import chakaChatApp.chaka.ExceptionHandler.UnAuthenticated;
 import chakaChatApp.chaka.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,8 @@ public class UserController {
 
     @GetMapping("")
     public List<User> getAllUsers() {
-        return userService.getAllUsers();
+       throw new UnAuthenticated("không tồn tại tài khoản nào ");
+//        return userService.getAllUsers();
     }
 
     @GetMapping("/{userId}")
