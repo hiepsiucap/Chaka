@@ -8,7 +8,8 @@ import java.util.Optional;
  public  interface ChatRoomService {
     List<ChatRoom> getAllChatRooms();
     Optional<ChatRoom> getChatRoomById(Long roomId);
-    ChatRoom createChatRoom(ChatRoom chatRoom);
+    ChatRoom createPrivateChatRoom(ChatRoom chatRoom);
+    ChatRoom createGroupChatRoom(ChatRoom chatRoom);
     ChatRoom updateChatRoom(Long roomId, ChatRoom chatRoomDetails);
     void deleteChatRoom(Long roomId);
 }

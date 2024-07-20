@@ -2,6 +2,7 @@ package chakaChatApp.chaka.Entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "messages")
@@ -24,9 +25,11 @@ public class Message {
     @Column(name = "message_text", nullable = false)
     private String messageText;
 
+    public Message() {
+    }
+
     @Column(name = "sent_at", nullable = false)
     private LocalDateTime sentAt = LocalDateTime.now();
-
     public Long getMessageId() {
         return messageId;
     }

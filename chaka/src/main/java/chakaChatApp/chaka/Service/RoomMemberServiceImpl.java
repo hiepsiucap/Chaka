@@ -46,6 +46,12 @@ public class RoomMemberServiceImpl implements RoomMemberService {
             throw new RuntimeException("RoomMember not found with id: " + id);
         }
     }
+    @Override
+    public  Boolean CheckRoomMember(Long userId, Long roomId)
+    {
+        Optional<RoomMember> roomMember=roomMemberRepository.findByUserIdAndRoomId(userId, roomId);
+        return roomMember.isPresent();
+    }
 
     @Override
     public void deleteRoomMember(Long id) {

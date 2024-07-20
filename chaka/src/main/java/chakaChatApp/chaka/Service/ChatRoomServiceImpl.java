@@ -29,10 +29,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     @Override
-    public ChatRoom createChatRoom(ChatRoom chatRoom) {
+    public ChatRoom createPrivateChatRoom(ChatRoom chatRoom) {
+          chatRoom.setGroup(false);
+          chatRoom.setRoomName("");
+          chatRoom.setPublic(false);
         return chatRoomRepository.save(chatRoom);
     }
 
+    @Override
+    public ChatRoom createGroupChatRoom(ChatRoom chatRoom) {
+        return chatRoomRepository.save(chatRoom);
+    }
     @Override
     public ChatRoom updateChatRoom(Long roomId, ChatRoom chatRoomDetails) {
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(roomId);

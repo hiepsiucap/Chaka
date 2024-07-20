@@ -1,5 +1,7 @@
 package chakaChatApp.chaka.Service;
 
+import chakaChatApp.chaka.DTO.ChatRoomDTO;
+import chakaChatApp.chaka.Entity.ChatRoom;
 import chakaChatApp.chaka.Entity.User;
 
 import java.util.List;
@@ -12,4 +14,6 @@ public interface UserService {
     User createUser(User user);
     User updateUser(Long userId, User userDetails);
     void deleteUser(Long userId);
+    List<ChatRoomDTO> getRoomsForUser(Long userId);
+    User getCurrentUser();
 }

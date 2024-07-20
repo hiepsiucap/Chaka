@@ -2,6 +2,7 @@ package chakaChatApp.chaka.Entity;
 
 import jakarta.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "room_members", uniqueConstraints = {
@@ -18,9 +19,40 @@ public class RoomMember {
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
+    @Column(name =  "role", nullable = false)
+    private  String role;
+
+    public String getRole() {
+        return role;
+    }
+
+    public RoomMember(Long roomId, Long userId, String role, ChatRoom chatRoom, User user) {
+        this.roomId = roomId;
+        this.userId = userId;
+        this.role = role;
+        this.chatRoom = chatRoom;
+        this.user = user;
+    }
+
+    public RoomMember() {
+    }
+
+    public RoomMember(Long id, Long roomId, Long userId, String role, LocalDateTime joinedAt, ChatRoom chatRoom, User user) {
+        this.id = id;
+        this.roomId = roomId;
+        this.userId = userId;
+        this.role = role;
+        this.joinedAt = joinedAt;
+        this.chatRoom = chatRoom;
+        this.user = user;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
     @Column(name = "joined_at", nullable = false)
-    private Timestamp joinedAt;
+    private LocalDateTime joinedAt= LocalDateTime.now();;
 
     @ManyToOne
     @JoinColumn(name = "room_id", insertable = false, updatable = false)
@@ -54,11 +86,11 @@ public class RoomMember {
         this.userId = userId;
     }
 
-    public Timestamp getJoinedAt() {
+    public LocalDateTime getJoinedAt() {
         return joinedAt;
     }
 
-    public void setJoinedAt(Timestamp joinedAt) {
+    public void setJoinedAt(LocalDateTime joinedAt) {
         this.joinedAt = joinedAt;
     }
 

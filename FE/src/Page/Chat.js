@@ -1,7 +1,119 @@
 /** @format */
-
+import { useEffect, useState, useRef } from "react";
+import Modal from "react-modal";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+import { getRequest, postRequest } from "../utilz/Request/Request";
+import EachChatRoom from "../component/EachChatRoom";
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    backgroundColor: "rgba(0, 0, 0, 0)",
+    border: "0",
+    padding: "0",
+    zIndex: "50",
+    width: "100%",
+  },
+  overlay: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Adjust the color and opacity here
+  },
+};
+Modal.setAppElement("#root");
 const Chat = () => {
-  const a = new Array(13);
+  const [stompClient, setStompClient] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [currentRooms, setCurrentRooms] = useState([]);
+  const abortControllerRef = useRef(null);
+  const [chatrooms, Changechatrooms] = useState(null);
+  useEffect(() => {
+    const getrequest = async () => {
+      const data = await getRequest(
+        "http://localhost:8080/api/users/currRooms"
+      );
+      if (data.error) {
+        Swal.fire({
+          title: "Đăng nhập thất bại",
+          text: data.message,
+          icon: "error",
+        });
+      } else {
+        Changechatrooms(data);
+      }
+    };
+    getrequest();
+  }, []);
+  // useEffect(() => {
+  //   connect();
+  // }, []);
+  const onClick = async (e) => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    try {
+      const response = await fetch(
+        "localhost:8080/api/chatrooms/detailChatroomMessage",
+        {
+          signal: controller.signal,
+          withCredntials: true,
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ chatRoomId: e.target.id }),
+        }
+      );
+      if (!response.ok) {
+        Swal.fire({
+          title: "Tìm kiếm tin nhắn thất bại",
+          text: "Tin nhắn không tồn tại",
+          icon: "error",
+        });
+      }
+      const result = await response.json();
+      setMessages(result);
+      setCurrentRooms(e.target.id);
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        Swal.fire({
+          title: "Tìm kiếm tin nhắn thất bại",
+          text: "Tin nhắn không tồn tại",
+          icon: "error",
+        });
+      }
+    }
+  };
+  useEffect(() => {
+    if (chatrooms)
+      chatrooms.map((chatroom) => {
+        subscribeToRoom(chatroom.roomId);
+        return null;
+      });
+  }, [stompClient, chatrooms]);
+  const connect = () => {
+    const socket = new SockJS("/ws");
+    const stompClient = Stomp.over(socket);
+    stompClient.connect({}, (frame) => {
+      console.log("Connected: " + frame);
+      setStompClient(stompClient);
+    });
+  };
+  const subscribeToRoom = (roomId) => {
+    if (stompClient) {
+      stompClient.subscribe("/topic/chatroom/" + roomId, (messageOutput) => {
+        console.log(messageOutput);
+      });
+    }
+  };
+
+  const a = new Array(2);
   a.fill(1);
   console.log(a);
   return (
@@ -10,22 +122,31 @@ const Chat = () => {
         <div className=" flex bg-bg2 rounded-xl flex-col h-screen  w-1/4 font-Roboto">
           <div className=" flex justify-between items-center px-3">
             <p className=" p-2 pt-4 font-bold text-2xl text-white">Tin nhắn</p>
-            <button className=" px-2 py-2 bg-bg3 rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="#FFFFFF"
-                class=" w-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"
+            <div className=" flex space-x-2">
+              <button className=" px-2 py-2 bg-bg3 rounded-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="#FFFFFF"
+                  class=" w-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"
+                  />
+                </svg>
+              </button>
+              <button className="  rounded-full">
+                <img
+                  className=" w-10 h-10 rounded-full"
+                  src="https://res.cloudinary.com/dhhuv7n0h/image/upload/v1697552614/cld-sample-4.jpg"
+                  alt=""
                 />
-              </svg>
-            </button>
+              </button>
+            </div>
           </div>
           <div className=" pl-5 pr-3 py-3">
             <div className=" flex space-x-2 px-3 py-2 bg-bg3 w-full rounded-full ">
@@ -46,64 +167,16 @@ const Chat = () => {
 
               <input
                 type="text"
-                className=" bg-opacity-0 bg-white w-full focus:outline-none focus:ring-0 border-0 border-opacity-0 focus:border-0 focus:border-opacity-0 w-full text-sm"
+                className=" bg-opacity-0 bg-white focus:outline-none focus:ring-0 border-0 border-opacity-0 focus:border-0 focus:border-opacity-0 w-full text-sm"
                 placeholder="Tìm kiếm tin nhắn "
               />
             </div>
           </div>
           <div className="px-4 pt-4 h-screen overflow-auto  flex flex-col ">
-            <div className=" flex justify-between px-2 py-2 items-center">
-              <div className="flex space-x-3 items-center w-full">
-                <div className="">
-                  <img
-                    src="https://res.cloudinary.com/dhhuv7n0h/image/upload/v1710901348/rfb0bgnjivk8cujez1ft.jpg"
-                    alt=""
-                    className=" w-14 h-14 rounded-full"
-                  />
-                </div>
-                <div className=" flex flex-col font-medium space-y-0.5 justify-center">
-                  <p className="">Nguyễn Hồng Hiệp</p>
-                  <p className=" text-sm text-white scale-y-95">
-                    Chào bạn .15h
-                  </p>
-                </div>
-              </div>
-              <div className="h-3 w-3 rounded-full bg-primary"></div>
-            </div>
-            <div className="flex space-x-3 px-2 py-2 bg-gray-800 rounded-lg">
-              <div className="">
-                <img
-                  src="https://res.cloudinary.com/dhhuv7n0h/image/upload/v1710901348/rfb0bgnjivk8cujez1ft.jpg"
-                  alt=""
-                  className=" w-14 h-14 rounded-full"
-                />
-              </div>
-              <div className=" flex flex-col space-y-0.5 justify-center">
-                <p className="">Nguyễn Hồng Hiệp</p>
-                <p className=" text-sm text-stone-400 scale-y-95">
-                  Chào bạn .15h
-                </p>
-              </div>
-            </div>
-            {a.map(() => {
-              return (
-                <div className="flex space-x-3 px-2 py-2">
-                  <div className="">
-                    <img
-                      src="https://res.cloudinary.com/dhhuv7n0h/image/upload/v1710901348/rfb0bgnjivk8cujez1ft.jpg"
-                      alt=""
-                      className=" w-14 h-14 rounded-full"
-                    />
-                  </div>
-                  <div className=" flex flex-col space-y-0.5 justify-center">
-                    <p className="">Nguyễn Hồng Hiệp</p>
-                    <p className=" text-sm text-stone-400 scale-y-95">
-                      Chào bạn .15h
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+            {chatrooms &&
+              chatrooms.map((chatroom) => {
+                return <EachChatRoom chatroom={chatroom}></EachChatRoom>;
+              })}
           </div>
         </div>
         <div className=" flex bg-bg2   flex-col rounded-xl h-screen w-2/4 font-Roboto">
@@ -385,19 +458,3 @@ const Chat = () => {
   );
 };
 export default Chat;
-{
-  /* <svg
-  xmlns="http://www.w3.org/2000/svg"
-  fill="none"
-  viewBox="0 0 24 24"
-  stroke-width="1.5"
-  stroke="currentColor"
-  class="size-6"
->
-  <path
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    d="M9.143 17.082a24.248 24.248 0 0 0 3.844.148m-3.844-.148a23.856 23.856 0 0 1-5.455-1.31 8.964 8.964 0 0 0 2.3-5.542m3.155 6.852a3 3 0 0 0 5.667 1.97m1.965-2.277L21 21m-4.225-4.225a23.81 23.81 0 0 0 3.536-1.003A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6.53 6.53m10.245 10.245L6.53 6.53M3 3l3.53 3.53"
-  />
-</svg>; */
-}

@@ -2,6 +2,7 @@ package chakaChatApp.chaka.Entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "chat_rooms")
@@ -14,14 +15,37 @@ public class ChatRoom {
     private Long roomId;
 
     @Column(name = "room_name", nullable = false, unique = true)
-    private String roomName;
+    private String roomName ="";
 
     @Column(name = "is_public", nullable = false)
     private boolean isPublic = true;
-
+    @Column(name = "is_group", nullable = false)
+    private  boolean isGroup= true;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @ManyToMany
+    @JoinTable(
+            name = "room_members",
+            joinColumns = @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> users;
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    public void setGroup(boolean group) {
+        isGroup = group;
+    }
     public Long getRoomId() {
         return roomId;
     }
@@ -53,5 +77,4 @@ public class ChatRoom {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-// Getters and setters
 }

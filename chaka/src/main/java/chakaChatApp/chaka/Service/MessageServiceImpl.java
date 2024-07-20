@@ -1,5 +1,6 @@
 package chakaChatApp.chaka.Service;
 
+import chakaChatApp.chaka.Entity.ChatRoom;
 import chakaChatApp.chaka.Entity.Message;
 import chakaChatApp.chaka.Respository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,17 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public  List<Message> getMessageByChatRoom(ChatRoom chatRoom)
+    {
+       return  messageRepository.findByChatRoom(chatRoom);
+    }
+    @Override
     public Optional<Message> getMessageById(Long messageId) {
         return messageRepository.findById(messageId);
     }
-
     @Override
     public Message createMessage(Message message) {
+
         return messageRepository.save(message);
     }
 

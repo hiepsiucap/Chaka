@@ -10,5 +10,7 @@ public interface RoomMemberService {
     Optional<RoomMember> getRoomMemberById(Long id);
     RoomMember createRoomMember(RoomMember roomMember);
     RoomMember updateRoomMember(Long id, RoomMember roomMemberDetails);
+
+    Boolean CheckRoomMember(Long userId, Long roomId);
     void deleteRoomMember(Long id);
 }
