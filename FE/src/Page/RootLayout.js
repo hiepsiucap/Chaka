@@ -4,7 +4,7 @@ import logo from "../assets/logo.svg";
 import { Outlet } from "react-router-dom";
 const RootLayout = () => {
   return (
-    <section className=" container mx-auto">
+    <section className=" container mx-auto bg-white">
       <div className=" flex w-full justify-between pt-2">
         <div className="">
           <img src={logo} className=" w-20" alt="" />

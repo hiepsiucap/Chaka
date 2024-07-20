@@ -1,6 +1,7 @@
 package chakaChatApp.chaka.Service;
 
 import chakaChatApp.chaka.Entity.User;
+import chakaChatApp.chaka.ExceptionHandler.BadRequest;
 import chakaChatApp.chaka.Respository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        return userRepository.save(user);
+
+
+        Optional<User> userOptional = userRepository.findByUsername(user.getUsername());
+        if (userOptional.isPresent()) {
+            throw  new BadRequest("UserName đã tồn tại vui lòng thử lại");
+        }
+        Optional<User> userOptional1 = userRepository.findByEmail(user.getEmail());
+        if (userOptional1.isPresent()) {
+            throw  new BadRequest("Email đã tồn tại vui lòng thử lại");
+        }
+        Optional<User> userOptional2 = userRepository.findByPhoneNumber(user.getPhoneNumber());
+        if (userOptional2.isPresent()) {
+            throw  new BadRequest("Số điện thoại đã tồn tại đã tồn tại vui lòng thử lại");
+        }
+
+           return userRepository.save(user);
     }
 
     @Override

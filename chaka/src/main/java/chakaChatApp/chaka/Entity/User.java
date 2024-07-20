@@ -1,12 +1,19 @@
 package chakaChatApp.chaka.Entity;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class User {
+    public User() {
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -16,21 +23,65 @@ public class User {
 
     @Column( name="password" ,nullable = false)
     private String password;
-
     @Column( name="email", nullable = false, unique = true)
     private String email;
+    @Column(name = "create_dt")
+    @JsonIgnore private Date createDt;
+    @Column(name= "verified_token")
+    @JsonIgnore private String VerifiedToken;
 
-    @Column(name="phone_number",nullable = false, unique = true)
+    @Column(name="phone_number",nullable = false)
     private String phoneNumber;
 
+    public User(Long userId, String username, String password, String email, Date createDt, String verifiedToken, String phoneNumber, boolean isActive, boolean isVerified, Set<Authority> authorities) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.createDt = createDt;
+        VerifiedToken = verifiedToken;
+        this.phoneNumber = phoneNumber;
+        this.isActive = isActive;
+        this.isVerified = isVerified;
+        this.authorities = authorities;
+    }
+
+    public String getVerifiedToken() {
+        return VerifiedToken;
+    }
+
+    public void setVerifiedToken(String verifiedToken) {
+        VerifiedToken = verifiedToken;
+    }
+
     @Column(name="is_active", nullable = false)
-    private boolean isActive = true;
+    private boolean isActive = false;
 
     @Column(name ="is_verified", nullable = false)
     private boolean isVerified = false;
 
-    @Column(name= "createdAt",nullable = false)
-    private Timestamp createdAt;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<Authority> authorities;
+
+    public User(Date createDt) {
+        this.createDt = createDt;
+    }
+    public Date getCreateDt() {
+        return createDt;
+    }
+
+    public void setCreateDt(Date createDt) {
+        this.createDt = createDt;
+    }
+    public Set<Authority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
+    }
 
     public Long getUserId() {
         return userId;
@@ -88,11 +139,5 @@ public class User {
         isVerified = verified;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
 }
